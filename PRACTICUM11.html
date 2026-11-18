@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puzzle Nest</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f4;
+            color: #163020;
+            padding: 35px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Main Form Card Matching Screenshot */
+        .form-card {
+            background-color: #ffffff;
+            border: 1.5px solid #4ea377;
+            border-radius: 14px;
+            padding: 36px 40px;
+            max-width: 650px;
+            width: 100%;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+        }
+
+        .form-card h1 {
+            font-size: 25px;
+            font-weight: 700;
+            color: #163020;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #163020;
+            margin-bottom: 7px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #95d5b2;
+            border-radius: 8px;
+            font-size: 14.5px;
+            color: #163020;
+            background-color: #ffffff;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #2c6648;
+            box-shadow: 0 0 0 3px rgba(44, 102, 72, 0.12);
+        }
+
+        /* Full-Width Dark Green Submit Button */
+        .submit-btn {
+            width: 100%;
+            background-color: #1e4631;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #143222;
+        }
+
+        /* Light Green Result Box with Left Dark Border */
+        .result-box {
+            background-color: #dff2e6;
+            border-left: 5px solid #2c6648;
+            border-radius: 8px;
+            padding: 18px 20px;
+            margin-top: 22px;
+            color: #163020;
+            font-size: 14.5px;
+            line-height: 1.6;
+        }
+
+        .result-box.error {
+            background-color: #fde8e8;
+            border-left-color: #c92a2a;
+            color: #7f1d1d;
+        }
+
+        .result-title {
+            font-weight: 700;
+            font-size: 15.5px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h1>🧩 Puzzle Nest Registration & Zone Check</h1>
+
+        <div class="form-group">
+            <label for="playerName">Player / Team Name:</label>
+            <input type="text" id="playerName" placeholder="Enter your name or team" value="Karunya Solver">
+        </div>
+
+        <div class="form-group">
+            <label for="pinCode">6-Digit Campus / Area PIN Code (Numbers Only):</label>
+            <input type="text" id="pinCode" maxlength="6" placeholder="e.g. 641114" value="641114">
+        </div>
+
+        <div class="form-group">
+            <label for="puzzleCount">Number of Puzzles to Attempt (Numbers Only):</label>
+            <input type="number" id="puzzleCount" min="1" placeholder="e.g. 15" value="15">
+        </div>
+
+        <button class="submit-btn" onclick="verifyAndRegister()">Verify Zone & Register Entry</button>
+
+        <div class="result-box" id="resultBox">
+            <div class="result-title">✓ Entry Registered for Karunya Solver!</div>
+            <div>Verified Hub Zone: <strong>Karunya Nagar, Coimbatore (Tamil Nadu)</strong></div>
+            <div>Challenge Load: <strong>15 Puzzles</strong> • Estimated Score Potential: <strong>375 pts</strong></div>
+        </div>
+    </div>
+
+    <script>
+        const pinZones = {
+            "641114": "Karunya Nagar, Coimbatore (Tamil Nadu)",
+            "641001": "Town Hall, Coimbatore (Tamil Nadu)",
+            "625007": "Denobli Press, Madurai (Tamil Nadu)",
+            "600001": "Parrys Corner, Chennai (Tamil Nadu)"
+        };
+
+        function verifyAndRegister() {
+            const name = document.getElementById('playerName').value.trim();
+            const pin = document.getElementById('pinCode').value.trim();
+            const count = parseInt(document.getElementById('puzzleCount').value.trim(), 10);
+            const resultBox = document.getElementById('resultBox');
+
+            if (!name) {
+                resultBox.className = "result-box error";
+                resultBox.innerHTML = `<div class="result-title">⚠ Please enter a Player or Team Name.</div>`;
+                return;
+            }
+
+            if (!/^\d{6}$/.test(pin)) {
+                resultBox.className = "result-box error";
+                resultBox.innerHTML = `<div class="result-title">⚠ Please enter a valid 6-digit numeric PIN Code.</div>`;
+                return;
+            }
+
+            if (isNaN(count) || count <= 0) {
+                resultBox.className = "result-box error";
+                resultBox.innerHTML = `<div class="result-title">⚠ Please enter a valid number of puzzles greater than 0.</div>`;
+                return;
+            }
+
+            const zoneName = pinZones[pin] || `Regional Zone PIN ${pin} (Tamil Nadu)`;
+            const estimatedPoints = count * 25;
+
+            resultBox.className = "result-box";
+            resultBox.innerHTML = `
+                <div class="result-title">✓ Entry Registered for ${name}!</div>
+                <div>Verified Hub Zone: <strong>${zoneName}</strong></div>
+                <div>Challenge Load: <strong>${count} Puzzles</strong> • Estimated Score Potential: <strong>${estimatedPoints} pts</strong></div>
+            `;
+        }
+    </script>
+
+</body>
+</html>
